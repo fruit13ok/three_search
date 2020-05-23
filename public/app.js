@@ -17,15 +17,24 @@ const getScrape = async (backendRoute, formObj) => {
         console.log('json',json);
         let mList = document.getElementById('result-list');
         mList.innerHTML = '';
-        let ul = document.createElement('ul');
-	    ul.className = 'list-group';
-        mList.appendChild(ul);
-        for(let i=0; i<json.length; i++){
-            let li = document.createElement('li');
-	        li.className = 	'list-group-item';
-            ul.appendChild(li);
-            li.innerHTML += JSON.stringify(json[i])+',';
-        }
+
+        // this version is JSON format array of objects
+        // each object has search key and result array
+        let pre = document.createElement('pre');
+        pre.innerHTML = JSON.stringify(json, null, 4);
+        mList.appendChild(pre);
+
+        // this version is list format in array if strings
+        // strings order in first search key follow by its result, then second search key, etc...
+        // let ul = document.createElement('ul');
+	    // ul.className = 'list-group';
+        // mList.appendChild(ul);
+        // for(let i=0; i<json.length; i++){
+        //     let li = document.createElement('li');
+	    //     li.className = 	'list-group-item';
+        //     ul.appendChild(li);
+        //     li.innerHTML += JSON.stringify(json[i])+',';
+        // }
     }catch (error) {
         console.log(error);
     }

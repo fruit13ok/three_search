@@ -33,6 +33,28 @@ app.listen(port, () => {
 
 // helper functions
 
+// scrape
+let scrape = async (searchWord) => {
+    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const page = await browser.newPage();
+    await page.goto(`https://www.google.com/search?&q=${searchWord}`);
+
+    const result = await page.evaluate(() => {
+        let movieList = [];
+        let elements = document.querySelectorAll('.nVcaUb');
+        for (var element of elements){
+            let temp = element.childNodes[0].textContent;
+            if(temp != "undefined"){
+                movieList.push(temp);
+            }
+        }
+        return movieList;
+    });
+    await page.close();
+    await browser.close();
+    return result;
+};
+
 // ROUTES
 // root
 app.get('/', function (req, res) {
@@ -45,7 +67,38 @@ app.post('/api', async function (req, res) {
     let curSearchKey1 = req.body.searchKey1 || "";
     let curSearchKey2 = req.body.searchKey2 || "";
     let curSearchKey3 = req.body.searchKey3 || "";
-    console.log("result", curSearchKey1, curSearchKey2, curSearchKey3);
-    let rlist = [curSearchKey1, curSearchKey2, curSearchKey3];
-    res.status(200).send(rlist);
+    let curSearchKeys = [curSearchKey1, curSearchKey2, curSearchKey3]
+    searchResults1 = [curSearchKey1];
+    searchResults2 = [curSearchKey2];
+    searchResults3 = [curSearchKey3];
+    console.log("3 search keys: ", curSearchKeys);
+    let resultList = [];
+    //
+    let tryLoop = async () => {
+        for(let i = 0; i < 3; i++){
+            await scrape(curSearchKeys[i])
+            .then((rlist) => {
+                // resultList = [...resultList, curSearchKeys[i], ...rlist];
+                resultList = [...resultList, {key: curSearchKeys[i], value: rlist}];
+            })
+        }
+        return resultList;
+    }
+    await tryLoop()
+    .then((rlist) => {
+        res.status(200).send(rlist);
+    });
+    // await scrape(curSearchKey1)
+    // .then((rlist) => {
+    //     searchResults1 = [...searchResults1, ...rlist];
+    // })
+    // await scrape(curSearchKey2)
+    // .then((rlist) => {
+    //     searchResults2 = [...searchResults2, ...rlist];
+    // });
+    // await scrape(curSearchKey3)
+    // .then((rlist) => {
+    //     searchResults3 = [...searchResults3, ...rlist];
+    // });
+    // res.status(200).send([...searchResults1,...searchResults2,...searchResults3]);
 });

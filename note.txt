@@ -5,6 +5,7 @@ code .
 npm init -y
 npm install express puppeteer body-parser node-fetch --save
 npm install nodemon --save-dev
+
 // in package.json
     "start-dev": "nodemon server"
 
@@ -29,7 +30,6 @@ touch public/app.js public/index.html
 // Access app.js, build a form with 3 input fields, a button, and a empty div,
 // result will later append to empty div.
 
-
 // run the server
 npm run start-dev
 
@@ -47,3 +47,11 @@ git add .
 git commit -m "first commit, basic server with form POST"
 git remote add origin https://github.com/fruit13ok/three_search.git
 git push -u origin master
+
+// if .gitignore not working, having upload project too large error,
+// delete node_modules folder, push again,
+// if still not work, delete .git folder too, try again.
+// Remember to npm i before next run, might need to click refresh in folder explorer.
+
+
+// implement 3 search scrape, return as array of object with search key and its results
